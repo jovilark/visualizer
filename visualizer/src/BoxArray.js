@@ -8,14 +8,14 @@ function BoxArray(props) {
 
     var count = 0;
     const total = 64;
-    const mag = .01;
+    const mag = .1;
     for (var x = -4; x < 4; x++) {
         for (var z = -4; z < 4; z++) {
             const c = `hsl(${(Math.floor((100/total)*count))}, 100%, 50%)`
             boxes.push(
             <Box 
             scale={props.scales ? props.scales[count] ? props.scales[count]*mag : 1 : 1}
-            position={[x*2, 0, z*2]}
+            position={[((x*8)*2)+z*2, 0, 0]}
             color={c}
             />)
             count += 1

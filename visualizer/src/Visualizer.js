@@ -1,19 +1,19 @@
 import { OrbitControls, Stars } from "@react-three/drei";
 import { useRef, useState, useEffect } from 'react';
 import BoxArray from "./BoxArray.js";
-import song from './song.mp3'
+import song from './song2.mp3'
 import { useFrame } from "@react-three/fiber";
 import GUI from 'lil-gui';
 
 
 function Visualizer() {
     const raf = useRef();
-    const data = useRef();
 
     const [controls, setControls] = useState({
         play: pause
     });
 
+    const [data, setData] = useState();
     const [started, setStarted] = useState();
     const [audio, setAudio] = useState();
     const [context, setContext] = useState();
@@ -30,12 +30,16 @@ function Visualizer() {
     });
 
     function draw() {
-        const prevData = data.current;
-        analyser.getByteTimeDomainData(data.current);
 
-        // Smooth values
-        const increment = .1;
-        data.current.map((x, i) => { return x < prevData[i] ? prevData[i]-increment : x })
+        var newData = new Uint8Array(analyser.frequencyBinCount);
+
+        analyser.getByteTimeDomainData(newData);
+        const increment = 5;
+        for (var i = 0; i < newData.length; ++i) {
+            if (newData[i] < data[i]) newData[i] = data[i]-increment;
+        }
+
+        setData(newData);
     }
 
     function prepareAPIs() {
@@ -75,7 +79,7 @@ function Visualizer() {
         if (context) {
             analyser.connect(context.destination);
             analyser.fftSize = 256;
-            data.current = new Uint8Array(analyser.frequencyBinCount);
+            setData(new Uint8Array(analyser.frequencyBinCount));
         }
     }, [analyser]);
 
@@ -85,9 +89,9 @@ function Visualizer() {
                 setTimeout(() => { source.connect(analyser); }, 2000)
             }
             else source.connect(analyser);
-
-            pause();
         }
+
+        pause();
     }, [source]);
 
     function pause() {
@@ -113,7 +117,7 @@ function Visualizer() {
         <ambientLight intensity={0.5} />
         <spotLight position={[10, 10, 10]} angle={0.15} penumbra={1} />
         <pointLight position={[-10, -10, -10]} />
-        <BoxArray scales={data.current} max={5} />
+        <BoxArray scales={data} max={5} />
       </>
     )
   }

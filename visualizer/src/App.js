@@ -1,6 +1,5 @@
 import { Canvas } from "@react-three/fiber";
-import Visualizer from './Visualizer.js'
-import ReactAudioPlayer from 'react-audio-player';
+import Visualizer from './Visualizer.js';
 
 function App() {
   return (
@@ -8,11 +7,6 @@ function App() {
       <Canvas>
         <Visualizer/>
       </Canvas>
-    <ReactAudioPlayer
-        src="/song.ogg"
-        autoPlay
-        controls
-      />
     </>
   )
 }
